@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faWeightHanging,
   faCircleNodes,
+  faRoute
 } from "@fortawesome/free-solid-svg-icons";
 import { dfs } from "../../algorithms/DFS";
 import { useToast } from "@chakra-ui/react";
