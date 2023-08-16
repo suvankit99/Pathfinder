@@ -98,22 +98,22 @@ const Astar = (grid, startNode, endNode, rows, cols) => {
 };
 
 
-const rows = 20;
-const cols = 60;
-const grid = getGrid(rows, cols);
-const startRow = 10;
-const startCol = 20;
-const endRow = 10;
-const endCol = 40;
+// const rows = 20;
+// const cols = 60;
+// const grid = getGrid(rows, cols);
+// const startRow = 10;
+// const startCol = 20;
+// const endRow = 10;
+// const endCol = 40;
 
-const startNode = grid[startRow][startCol];
-startNode.parentNode = startNode ;
-// console.log("startNode = " , startNode) ;
-const endNode = grid[endRow][endCol];
-// console.log("endNode = " , endNode) ;
+// const startNode = grid[startRow][startCol];
+// startNode.parentNode = startNode ;
+// // console.log("startNode = " , startNode) ;
+// const endNode = grid[endRow][endCol];
+// // console.log("endNode = " , endNode) ;
 
-const {visitedNodes} = Astar(grid, startNode, endNode, rows, cols);
+// const {visitedNodes} = Astar(grid, startNode, endNode, rows, cols);
 
-console.log("number of nodes visited = ", visitedNodes.length);
+// console.log("number of nodes visited = ", visitedNodes.length);
 
 module.exports = Astar;
