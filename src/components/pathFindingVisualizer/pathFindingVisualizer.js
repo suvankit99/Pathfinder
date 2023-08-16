@@ -9,13 +9,12 @@ import djikstra from "../../algorithms/Djikstra";
 import InfoHeader from "../InfoHeader/InfoHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCoffee,
-  faWeight,
   faWeightHanging,
   faCircleNodes,
 } from "@fortawesome/free-solid-svg-icons";
+import { dfs } from "../../algorithms/DFS";
 
-const rows = 20;
+const rows = 18;
 const cols = 60;
 
 const PathFindingVisualizer = () => {
@@ -29,6 +28,8 @@ const PathFindingVisualizer = () => {
   const [reset, setReset] = useState(false);
   const [isDragStart, setIsDragStart] = useState(false);
   const [addWeights, setAddWeights] = useState(false);
+  const [algorithm, setalgorithm] = useState("bfs");
+  const [isDragEnd, setisDragEnd] = useState(false);
 
   const animateAlgorithm = (visitedNodes) => {
     for (let i = 0; i < visitedNodes.length; i++) {
@@ -80,46 +81,80 @@ const PathFindingVisualizer = () => {
     const shortestPath = getShortestPath(endNode);
     animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
   };
+  const visualizeDfs = (grid, startNode, endNode, rows, cols) => {
+    setIsAnimating(true);
+    let visitedNodes = [] ;
+    // set parent of startnode to be himself
+    startNode.parentNode = startNode ;
+    dfs(startNode , grid , endNode , rows, cols , visitedNodes) ;
+    animateAlgorithm(visitedNodes);
+    const shortestPath = getShortestPath(endNode);
+    animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+  }
+
   const getNewGridWithWallToggled = (grid, row, col) => {
     const newGrid = grid.slice();
     const node = grid[row][col];
-    if (row === startRow && col === startCol) {
+    if (isDragStart) {
       setstartRow(row);
       setstartCol(col);
-    } else if (addWeights) {
-      node.weight = 5;
-    } else {
-      if (node.weight === 0 && row !== startRow && col !== startCol) {
-        node.isWall = true;
-      }
+      return grid ;
+    } else if (isDragEnd) {
+      setendRow(row);
+      setendCol(col);
     }
+    if (isDragStart || isDragEnd) return grid;
+    // add weights
+    else if (addWeights && node.weight === 0 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
+      node.weight = 5;
+    } else if (node.weight === 0 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
+      node.isWall = true;
+    } 
+
     newGrid[row][col] = node;
     return newGrid;
   };
   const handleMouseDown = (row, col) => {
     if (isAnimating) return;
     if (row === startRow && col === startCol) {
-      setIsDragStart(true);
+      setIsDragStart( true );
+    } else if (row === endRow && col === endCol) {
+      setisDragEnd(true);
     }
     const newGrid = getNewGridWithWallToggled(grid, row, col);
     setIsMousePressed(true);
     setGrid(newGrid);
   };
 
+  const handleMouseUp = (row, col) => {
+    if (isDragStart) {
+      setstartRow(row);
+      setstartCol(col);
+      setIsDragStart(false);
+    } else if (isDragEnd) {
+      setendRow(row);
+      setendCol(col);
+      setisDragEnd(false);
+    }
+    setIsMousePressed(false);
+  };
+
   const handleMouseEnter = (row, col) => {
-    if (isAnimating) return;
+    // if (isAnimating) return;
     if (!isMousePressed) return;
     const newGrid = getNewGridWithWallToggled(grid, row, col);
     setIsMousePressed(true);
     setGrid(newGrid);
   };
-  const handleMouseUp = () => {
-    setIsMousePressed(false);
-  };
+
   const handleAddWeights = () => {
-    console.log(addWeights);
     setAddWeights(!addWeights);
   };
+
+  const handleClick = (row , col) => {
+    // handleMouseDown(row , col) ;
+    // handleMouseUp(row , col) ;
+  }
   useEffect(() => {
     setGrid(getGrid(rows, cols));
   }, [reset]);
@@ -127,7 +162,7 @@ const PathFindingVisualizer = () => {
   return (
     <>
       {/* header section */}
-      <Box backgroundColor={"#34495E"} marginBottom={"20px"}>
+      <Box backgroundColor={"#393E46"} marginBottom={"20px"}>
         <Heading
           display={"flex"}
           gap={"20px"}
@@ -152,6 +187,7 @@ const PathFindingVisualizer = () => {
             marginTop={"20px"}
             marginBottom={"30px"}
             onChange={handleAddWeights}
+            // isDisabled={algorithm !== "djikstra"}
           >
             <Text
               fontFamily={"sans-serif"}
@@ -195,6 +231,23 @@ const PathFindingVisualizer = () => {
             {" "}
             visualize djikstra
           </Button>
+          <Button
+            marginTop={"20px"}
+            marginBottom={"30px"}
+            colorScheme="teal"
+            onClick={() => {
+              visualizeDfs(
+                grid,
+                grid[startRow][startCol],
+                grid[endRow][endCol],
+                rows,
+                cols
+              );
+            }}
+          >
+            {" "}
+            visualize dfs
+          </Button>
         </Box>
       </Box>
       <InfoHeader />
@@ -230,6 +283,7 @@ const PathFindingVisualizer = () => {
                     handleMouseDown={handleMouseDown}
                     handleMouseEnter={handleMouseEnter}
                     handleMouseUp={handleMouseUp}
+                    handleClick = {handleClick}
                   ></Node>
                 );
               })}

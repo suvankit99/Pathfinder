@@ -1,32 +1,11 @@
-const getGrid = (rows, cols) => {
-  let grid = [];
-  for (let i = 0; i < rows; i++) {
-    let row = [];
-    for (let j = 0; j < cols; j++) {
-      let node = {
-        row: i,
-        col: j,
-        distance: Infinity,
-        isStart: false,
-        isFinish: false,
-        isVisited: false,
-      };
-      row.push(node);
-    }
-    grid.push(row);
-  }
-  return grid;
-};
 
 let dr = [-1, 0, 1, 0];
 let dc = [0, 1, 0, -1];
+
 const bfs = (grid, startNode, endNode, rows, cols) => {
-  // let unvisitedNodes = grid.slice();
-  console.log(startNode);
   startNode.parentNode = startNode ;
   startNode.distance = 0;
   startNode.visited = true;
-  console.log(startNode);
   let Q = [startNode];
   let visitedInorder = [startNode];
   while (Q.length !== 0) {

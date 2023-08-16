@@ -1,8 +1,6 @@
 let dr = [-1, 0, 1, 0];
 let dc = [0, 1, 0, -1];
 const djikstra = (grid, startNode, endNode, rows, cols) => {
-  let unvisitedNodes = grid.slice();
-  console.log(startNode);
   startNode.parentNode = startNode;
   startNode.distance = 0;
   startNode.visited = true;
