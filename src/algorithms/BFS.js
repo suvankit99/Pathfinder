@@ -3,6 +3,10 @@ let dr = [-1, 0, 1, 0];
 let dc = [0, 1, 0, -1];
 
 const bfs = (grid, startNode, endNode, rows, cols) => {
+  let result = {
+    visitedNodes : [] ,
+    reachedGoal : false 
+  }
   startNode.parentNode = startNode ;
   startNode.distance = 0;
   startNode.visited = true;
@@ -34,13 +38,16 @@ const bfs = (grid, startNode, endNode, rows, cols) => {
           visitedInorder.push(grid[newRow][newCol]);
           Q.push(grid[newRow][newCol]);
           if (newRow === endNode.row && newCol === endNode.col) {
-            return visitedInorder;
+            result.visitedNodes = visitedInorder ;
+            result.reachedGoal = true ;
+            return result ;
           }
         }
       }
     }
   }
-  return visitedInorder;
+  result.visitedNodes = visitedInorder ;
+  return result ;
 };
 
 // const rows = 20;

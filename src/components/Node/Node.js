@@ -60,7 +60,7 @@ const Node = ({
     >
       {isStart && <ArrowRightIcon boxSize={5}></ArrowRightIcon>}
       {isFinish && <StarIcon boxSize={5}></StarIcon>}
-      {weight > 0 && <FontAwesomeIcon icon={faWeightHanging} />}
+      {weight > 1 && <FontAwesomeIcon icon={faWeightHanging} />}
     </Center>
   );
 };

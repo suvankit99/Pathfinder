@@ -1,6 +1,10 @@
 let dr = [-1, 0, 1, 0];
 let dc = [0, 1, 0, -1];
 const djikstra = (grid, startNode, endNode, rows, cols) => {
+  let result = {
+    visitedNodes : [] ,
+    reachedGoal : false 
+  }
   startNode.parentNode = startNode;
   startNode.distance = 0;
   startNode.visited = true;
@@ -9,7 +13,7 @@ const djikstra = (grid, startNode, endNode, rows, cols) => {
   let visitedInorder = [startNode];
   while (Q.length !== 0) {
     Q.sort(function (a, b) {
-      return a.weight - b.weight;
+      return a.distance - b.distance;
     });
     let node = Q[0];
     let nodeRow = node.row;
@@ -30,16 +34,19 @@ const djikstra = (grid, startNode, endNode, rows, cols) => {
           continue;
         }
         grid[newRow][newCol].parentNode = node;
-        grid[newRow][newCol].distance = initDis + 1;
+        grid[newRow][newCol].distance = initDis + grid[newRow][newCol].weight;
         visitedInorder.push(grid[newRow][newCol]);
         Q.push(grid[newRow][newCol]);
         if (newRow === endNode.row && newCol === endNode.col) {
-          return visitedInorder;
+            result.visitedNodes = visitedInorder ;
+            result.reachedGoal = true ;
+            return result ;
         }
       }
     }
   }
-  return visitedInorder;
+  result.visitedNodes = visitedInorder ;
+  return result ;
 };
 
 module.exports = djikstra;

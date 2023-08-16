@@ -13,6 +13,8 @@ import {
   faCircleNodes,
 } from "@fortawesome/free-solid-svg-icons";
 import { dfs } from "../../algorithms/DFS";
+import { useToast } from '@chakra-ui/react'
+import Astar from "../../algorithms/Astar";
 
 const rows = 18;
 const cols = 60;
@@ -30,6 +32,7 @@ const PathFindingVisualizer = () => {
   const [addWeights, setAddWeights] = useState(false);
   const [algorithm, setalgorithm] = useState("bfs");
   const [isDragEnd, setisDragEnd] = useState(false);
+  const toast = useToast()
 
   const animateAlgorithm = (visitedNodes) => {
     for (let i = 0; i < visitedNodes.length; i++) {
@@ -69,28 +72,85 @@ const PathFindingVisualizer = () => {
   };
   const visualizeDjikstra = (grid, startNode, endNode, rows, cols) => {
     setIsAnimating(true);
-    const visitedNodes = djikstra(grid, startNode, endNode, rows, cols);
+    const {visitedNodes , reachedGoal} = djikstra(grid, startNode, endNode, rows, cols);
     animateAlgorithm(visitedNodes);
-    const shortestPath = getShortestPath(endNode);
-    animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    if(reachedGoal){
+      const shortestPath = getShortestPath(endNode);
+      animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    }
+    else{
+      setTimeout(() => {
+        toast({
+          title: 'There is no path to reach finish node',
+          duration: 2500,
+          status:"info" ,
+          isClosable: true,
+        })
+      }, visitedNodes.length * 10 + 100);
+    }
+    
   };
   const visualizeBfs = (grid, startNode, endNode, rows, cols) => {
     setIsAnimating(true);
-    const visitedNodes = bfs(grid, startNode, endNode, rows, cols);
+    const { visitedNodes , reachedGoal } = bfs(grid, startNode, endNode, rows, cols);
     animateAlgorithm(visitedNodes);
-    const shortestPath = getShortestPath(endNode);
-    animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    if(reachedGoal){
+      const shortestPath = getShortestPath(endNode);
+      animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    }
+    else{
+      setTimeout(() => {
+        toast({
+          title: 'There is no path to reach finish node',
+          duration: 2500,
+          status:"info" ,
+          isClosable: true,
+        })
+      }, visitedNodes.length * 10 + 100);
+      
+    }
   };
   const visualizeDfs = (grid, startNode, endNode, rows, cols) => {
     setIsAnimating(true);
     let visitedNodes = [] ;
     // set parent of startnode to be himself
     startNode.parentNode = startNode ;
-    dfs(startNode , grid , endNode , rows, cols , visitedNodes) ;
+    const reachedGoal = dfs(startNode , grid , endNode , rows, cols , visitedNodes) ;
     animateAlgorithm(visitedNodes);
-    const shortestPath = getShortestPath(endNode);
-    animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    if(reachedGoal){
+      const shortestPath = getShortestPath(endNode);
+      animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    }else{
+      setTimeout(() => {
+        toast({
+          title: 'There is no path to reach finish node',
+          duration: 2500,
+          status:"info" ,
+          isClosable: true,
+        })
+      }, visitedNodes.length * 10 + 100);
+    }
   }
+const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
+  setIsAnimating(true);
+    const {visitedNodes , reachedGoal} = Astar(grid, startNode, endNode, rows, cols);
+    animateAlgorithm(visitedNodes);
+    if(reachedGoal){
+      const shortestPath = getShortestPath(endNode);
+      animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
+    }
+    else{
+      setTimeout(() => {
+        toast({
+          title: 'There is no path to reach finish node',
+          duration: 2500,
+          status:"info" ,
+          isClosable: true,
+        })
+      }, visitedNodes.length * 10 + 100);
+    }
+    
+}
 
   const getNewGridWithWallToggled = (grid, row, col) => {
     const newGrid = grid.slice();
@@ -105,9 +165,9 @@ const PathFindingVisualizer = () => {
     }
     if (isDragStart || isDragEnd) return grid;
     // add weights
-    else if (addWeights && node.weight === 0 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
+    else if (addWeights && node.weight === 1 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
       node.weight = 5;
-    } else if (node.weight === 0 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
+    } else if (node.weight === 1 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
       node.isWall = true;
     } 
 
@@ -247,6 +307,23 @@ const PathFindingVisualizer = () => {
           >
             {" "}
             visualize dfs
+          </Button>
+          <Button
+            marginTop={"20px"}
+            marginBottom={"30px"}
+            colorScheme="teal"
+            onClick={() => {
+              visualizeAstar(
+                grid,
+                grid[startRow][startCol],
+                grid[endRow][endCol],
+                rows,
+                cols
+              );
+            }}
+          >
+            {" "}
+            visualize A*search
           </Button>
         </Box>
       </Box>

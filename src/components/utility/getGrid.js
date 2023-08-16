@@ -6,7 +6,7 @@ const getGrid = (rows, cols) => {
         let node = {
           row: i,
           col: j,
-          weight : 0 ,
+          weight : 1 ,
           distance: Infinity,
           isStart: false,
           isFinish: false,
