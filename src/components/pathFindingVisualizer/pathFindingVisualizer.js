@@ -1,7 +1,17 @@
 import React, { useEffect } from "react";
 import Node from "../Node/Node";
 import { useState } from "react";
-import { Box, Center, Checkbox, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Checkbox,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from "@chakra-ui/react";
 import { Button, ButtonGroup } from "@chakra-ui/react";
 import { bfs } from "../../algorithms/BFS";
 import { getGrid } from "../utility/getGrid";
@@ -13,8 +23,9 @@ import {
   faCircleNodes,
 } from "@fortawesome/free-solid-svg-icons";
 import { dfs } from "../../algorithms/DFS";
-import { useToast } from '@chakra-ui/react'
+import { useToast } from "@chakra-ui/react";
 import Astar from "../../algorithms/Astar";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const rows = 18;
 const cols = 60;
@@ -30,9 +41,10 @@ const PathFindingVisualizer = () => {
   const [reset, setReset] = useState(false);
   const [isDragStart, setIsDragStart] = useState(false);
   const [addWeights, setAddWeights] = useState(false);
-  const [algorithm, setalgorithm] = useState("bfs");
+  const [algorithm, setalgorithm] = useState("");
   const [isDragEnd, setisDragEnd] = useState(false);
-  const toast = useToast()
+  const [visualizeButtonText, setvisualizeButtonText] = useState("Visualize");
+  const toast = useToast();
 
   const animateAlgorithm = (visitedNodes) => {
     for (let i = 0; i < visitedNodes.length; i++) {
@@ -45,16 +57,7 @@ const PathFindingVisualizer = () => {
       }, 10 * (i + 1));
     }
   };
-  const getShortestPath = (endNode) => {
-    let path = [];
-    let node = endNode;
-    while (node.parentNode !== node) {
-      path.push(node);
-      node = node.parentNode;
-    }
-    path.push(node);
-    return path.reverse();
-  };
+
   const animateShortestPath = (path, initialTime) => {
     for (let i = 0; i < path.length; i++) {
       setTimeout(() => {
@@ -72,104 +75,134 @@ const PathFindingVisualizer = () => {
   };
   const visualizeDjikstra = (grid, startNode, endNode, rows, cols) => {
     setIsAnimating(true);
-    const {visitedNodes , reachedGoal} = djikstra(grid, startNode, endNode, rows, cols);
+    const { visitedNodes, reachedGoal } = djikstra(
+      grid,
+      startNode,
+      endNode,
+      rows,
+      cols
+    );
     animateAlgorithm(visitedNodes);
-    if(reachedGoal){
+    if (reachedGoal) {
       const shortestPath = getShortestPath(endNode);
       animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
-    }
-    else{
+    } else {
       setTimeout(() => {
         toast({
-          title: 'There is no path to reach finish node',
+          title: "There is no path to reach finish node",
           duration: 2500,
-          status:"info" ,
+          status: "info",
           isClosable: true,
-        })
+        });
       }, visitedNodes.length * 10 + 100);
     }
-    
   };
   const visualizeBfs = (grid, startNode, endNode, rows, cols) => {
     setIsAnimating(true);
-    const { visitedNodes , reachedGoal } = bfs(grid, startNode, endNode, rows, cols);
+    const { visitedNodes, reachedGoal } = bfs(
+      grid,
+      startNode,
+      endNode,
+      rows,
+      cols
+    );
     animateAlgorithm(visitedNodes);
-    if(reachedGoal){
+    if (reachedGoal) {
       const shortestPath = getShortestPath(endNode);
       animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
-    }
-    else{
+    } else {
       setTimeout(() => {
         toast({
-          title: 'There is no path to reach finish node',
+          title: "There is no path to reach finish node",
           duration: 2500,
-          status:"info" ,
+          status: "info",
           isClosable: true,
-        })
+        });
       }, visitedNodes.length * 10 + 100);
-      
     }
   };
   const visualizeDfs = (grid, startNode, endNode, rows, cols) => {
     setIsAnimating(true);
-    let visitedNodes = [] ;
+    let visitedNodes = [];
     // set parent of startnode to be himself
-    startNode.parentNode = startNode ;
-    const reachedGoal = dfs(startNode , grid , endNode , rows, cols , visitedNodes) ;
+    startNode.parentNode = startNode;
+    const reachedGoal = dfs(startNode, grid, endNode, rows, cols, visitedNodes);
     animateAlgorithm(visitedNodes);
-    if(reachedGoal){
+    if (reachedGoal) {
       const shortestPath = getShortestPath(endNode);
       animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
-    }else{
+    } else {
       setTimeout(() => {
         toast({
-          title: 'There is no path to reach finish node',
+          title: "There is no path to reach finish node",
           duration: 2500,
-          status:"info" ,
+          status: "info",
           isClosable: true,
-        })
+        });
       }, visitedNodes.length * 10 + 100);
     }
-  }
-const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
-  setIsAnimating(true);
-    const {visitedNodes , reachedGoal} = Astar(grid, startNode, endNode, rows, cols);
+  };
+  const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
+    setIsAnimating(true);
+    const { visitedNodes, reachedGoal } = Astar(
+      grid,
+      startNode,
+      endNode,
+      rows,
+      cols
+    );
     animateAlgorithm(visitedNodes);
-    if(reachedGoal){
+    if (reachedGoal) {
       const shortestPath = getShortestPath(endNode);
       animateShortestPath(shortestPath, visitedNodes.length * 10 + 100);
-    }
-    else{
+    } else {
       setTimeout(() => {
         toast({
-          title: 'There is no path to reach finish node',
+          title: "There is no path to reach finish node",
           duration: 2500,
-          status:"info" ,
+          status: "info",
           isClosable: true,
-        })
+        });
       }, visitedNodes.length * 10 + 100);
     }
-    
-}
-
+  };
+  const getShortestPath = (endNode) => {
+    let path = [];
+    let node = endNode;
+    while (node.parentNode !== node) {
+      path.push(node);
+      node = node.parentNode;
+    }
+    path.push(node);
+    return path.reverse();
+  };
   const getNewGridWithWallToggled = (grid, row, col) => {
     const newGrid = grid.slice();
     const node = grid[row][col];
     if (isDragStart) {
       setstartRow(row);
       setstartCol(col);
-      return grid ;
+      return grid;
     } else if (isDragEnd) {
       setendRow(row);
       setendCol(col);
     }
     if (isDragStart || isDragEnd) return grid;
     // add weights
-    else if (addWeights && node.weight === 1 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
+    else if (
+      addWeights &&
+      node.weight === 1 &&
+      !(row === startRow && col === startCol) &&
+      !(row === endRow && col === endCol)
+    ) {
       node.weight = 5;
-    } else if (node.weight === 1 && !(row === startRow && col === startCol) && !(row === endRow && col === endCol)) {
+    } else if (
+      node.weight === 1 &&
+      !(row === startRow && col === startCol) &&
+      !(row === endRow && col === endCol)
+    ) {
       node.isWall = true;
-    } 
+    }
 
     newGrid[row][col] = node;
     return newGrid;
@@ -177,7 +210,7 @@ const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
   const handleMouseDown = (row, col) => {
     if (isAnimating) return;
     if (row === startRow && col === startCol) {
-      setIsDragStart( true );
+      setIsDragStart(true);
     } else if (row === endRow && col === endCol) {
       setisDragEnd(true);
     }
@@ -211,10 +244,48 @@ const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
     setAddWeights(!addWeights);
   };
 
-  const handleClick = (row , col) => {
+  const handleClick = (row, col) => {
     // handleMouseDown(row , col) ;
     // handleMouseUp(row , col) ;
-  }
+  };
+
+  const selectAlgorithm = () => {
+    if (algorithm === "BFS") {
+      visualizeBfs(
+        grid,
+        grid[startRow][startCol],
+        grid[endRow][endCol],
+        rows,
+        cols
+      );
+    } else if (algorithm === "DFS") {
+      visualizeDfs(
+        grid,
+        grid[startRow][startCol],
+        grid[endRow][endCol],
+        rows,
+        cols
+      );
+    } else if (algorithm === "Djikstra") {
+      visualizeDjikstra(
+        grid,
+        grid[startRow][startCol],
+        grid[endRow][endCol],
+        rows,
+        cols
+      );
+    } else if (algorithm === "A* search") {
+      visualizeAstar(
+        grid,
+        grid[startRow][startCol],
+        grid[endRow][endCol],
+        rows,
+        cols
+      );
+    } else {
+      setvisualizeButtonText("Pick an algorithm !");
+    }
+  };
   useEffect(() => {
     setGrid(getGrid(rows, cols));
   }, [reset]);
@@ -243,11 +314,62 @@ const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
           <FontAwesomeIcon icon={faCircleNodes} spin size="sm" />
         </Heading>
         <Box display={"flex"} justifyContent={"center"} gap={"40px"}>
+          <Menu>
+            <MenuButton
+              marginTop={"20px"}
+              marginBottom={"30px"}
+              as={Button}
+              rightIcon={<ChevronDownIcon />}
+            >
+              Algorithms
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                as={Button}
+                onClick={() => {
+                  setReset(!reset);
+                  setalgorithm("A* search");
+                  setvisualizeButtonText("Visualize A* search");
+                }}
+              >
+                A* search
+              </MenuItem>
+              <MenuItem
+                as={Button}
+                onClick={() => {
+                  setReset(!reset);
+                  setalgorithm("Djikstra");
+                  setvisualizeButtonText("Visualize Djikstra");
+                }}
+              >
+                Djikstra
+              </MenuItem>
+              <MenuItem
+                as={Button}
+                onClick={() => {
+                  setReset(!reset);
+                  setalgorithm("BFS");
+                  setvisualizeButtonText("Visualize BFS");
+                }}
+              >
+                <div>Breadth First Search</div>
+              </MenuItem>
+              <MenuItem
+                as={Button}
+                onClick={() => {
+                  setReset(!reset);
+                  setalgorithm("DFS");
+                  setvisualizeButtonText("Visualize DFS");
+                }}
+              >
+                <div>Depth First Search</div>
+              </MenuItem>
+            </MenuList>
+          </Menu>
           <Checkbox
             marginTop={"20px"}
             marginBottom={"30px"}
             onChange={handleAddWeights}
-            // isDisabled={algorithm !== "djikstra"}
           >
             <Text
               fontFamily={"sans-serif"}
@@ -262,68 +384,23 @@ const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
             marginBottom={"30px"}
             colorScheme="teal"
             onClick={() => {
-              visualizeBfs(
-                grid,
-                grid[startRow][startCol],
-                grid[endRow][endCol],
-                rows,
-                cols
-              );
+              selectAlgorithm();
             }}
           >
             {" "}
-            visualize bfs
+            {visualizeButtonText}
           </Button>
+
           <Button
             marginTop={"20px"}
             marginBottom={"30px"}
             colorScheme="teal"
             onClick={() => {
-              visualizeDjikstra(
-                grid,
-                grid[startRow][startCol],
-                grid[endRow][endCol],
-                rows,
-                cols
-              );
+              setReset(!reset);
             }}
           >
             {" "}
-            visualize djikstra
-          </Button>
-          <Button
-            marginTop={"20px"}
-            marginBottom={"30px"}
-            colorScheme="teal"
-            onClick={() => {
-              visualizeDfs(
-                grid,
-                grid[startRow][startCol],
-                grid[endRow][endCol],
-                rows,
-                cols
-              );
-            }}
-          >
-            {" "}
-            visualize dfs
-          </Button>
-          <Button
-            marginTop={"20px"}
-            marginBottom={"30px"}
-            colorScheme="teal"
-            onClick={() => {
-              visualizeAstar(
-                grid,
-                grid[startRow][startCol],
-                grid[endRow][endCol],
-                rows,
-                cols
-              );
-            }}
-          >
-            {" "}
-            visualize A*search
+            Clear Path
           </Button>
         </Box>
       </Box>
@@ -360,7 +437,7 @@ const visualizeAstar = (grid, startNode, endNode, rows, cols) => {
                     handleMouseDown={handleMouseDown}
                     handleMouseEnter={handleMouseEnter}
                     handleMouseUp={handleMouseUp}
-                    handleClick = {handleClick}
+                    handleClick={handleClick}
                   ></Node>
                 );
               })}

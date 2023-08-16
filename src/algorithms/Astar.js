@@ -44,9 +44,7 @@ const g = (node) => {
 const heuristic = (node , endNode) => {
     const deltaX = Math.abs(node.row - endNode.row) ;
     const deltaY = Math.abs(node.col - endNode.col) ;
-    const euclideanDistance = Math.sqrt(deltaX ** 2 + deltaY ** 2) ;
-    const value = 14 * Math.max(deltaX , deltaY) + 10 * Math.min(deltaY) ;
-    const manHattanDistance = deltaX + deltaY ;
+    const manHattanDistance = node.weight * (deltaX + deltaY);
     return manHattanDistance ;
 };
 
